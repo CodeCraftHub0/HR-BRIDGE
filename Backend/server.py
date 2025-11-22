@@ -98,10 +98,10 @@ except Exception as e:
 
 
 # Database configuration
-# On PythonAnywhere, MySQL host should be your username, not 'localhost'
-# Try 'YvanTrey' first, if that doesn't work, use 'YvanTrey.mysql.pythonanywhere-services.com'
+# On PythonAnywhere, MySQL host should be the full hostname or 'localhost'
+# Common formats: 'YvanTrey.mysql.pythonanywhere-services.com' or 'localhost'
 db_config = {
-    'host': os.getenv('DB_HOST', 'YvanTrey'),  # PythonAnywhere MySQL host (usually just username)
+    'host': os.getenv('DB_HOST', 'YvanTrey.mysql.pythonanywhere-services.com'),  # PythonAnywhere MySQL host
     'user': os.getenv('DB_USER', 'YvanTrey'),   # Use your actual PythonAnywhere username
     'password': os.getenv('DB_PASSWORD', ''),   # Set in .env file or environment variable
     'database': os.getenv('DB_NAME', 'YvanTrey$default'),  # Use your actual database name
