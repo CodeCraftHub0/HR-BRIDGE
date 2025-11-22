@@ -203,7 +203,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } else if (error.response?.status === 403) {
         errorMessage = "Access forbidden. Please contact administrator.";
       } else if (error.response?.status >= 500) {
-        errorMessage = "Server error. Please try again later.";
+        // Show the actual error from backend if available
+        const backendError = error.response?.data?.error || error.response?.data?.message;
+        errorMessage = backendError || "Server error. Please try again later.";
       } else if (error.message?.includes('CORS')) {
         errorMessage = "CORS error. Please check backend configuration.";
       }
