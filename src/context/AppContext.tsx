@@ -5,6 +5,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { login as authLogin, transformUserData } from '@/services/auth';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://yvantrey.pythonanywhere.com/api';
+
 interface AppContextType {
   currentUser: User | null;
   token: string | null;
@@ -66,7 +68,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         console.log('Validating token with backend...');
         // Validate token with backend
-        const response = await axios.get('https://yvantrey.pythonanywhere.com/api/auth/validate', {
+        const response = await axios.get(`${API_URL}/auth/validate`, {
           headers: { Authorization: `Bearer ${storedToken}` }
         });
 
@@ -138,7 +140,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!token) return;
     setNotificationsLoading(true);
     try {
-      const { data } = await axios.get('https://yvantrey.pythonanywhere.com/api/notifications', {
+      const { data } = await axios.get(`${API_URL}/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Transform backend fields to Notification type

@@ -29,19 +29,27 @@ STANDARD_PASSWORD_HASH = generate_password_hash(STANDARD_PASSWORD)
 
 app = Flask(__name__)
 # Configure CORS to allow requests from your frontend
+# Get allowed origins from environment variable or use defaults
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '').split(',') if os.getenv('ALLOWED_ORIGINS') else []
+# Add localhost origins for development
+default_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:8080",
+    "http://localhost:8081",
+    "http://localhost:8082",
+    "http://localhost:8083",
+    "http://localhost:8084"
+]
+# Combine and filter out empty strings
+all_origins = [origin.strip() for origin in allowed_origins + default_origins if origin.strip()]
+
 CORS(app, resources={
     r"/api/*": {
-        "origins": [
-            "http://localhost:3000",
-            "http://localhost:5173",
-            "http://localhost:8080",
-            "http://localhost:8081",
-            "http://localhost:8082",
-            "http://localhost:8083",
-            "http://localhost:8084"
-        ],
+        "origins": all_origins if all_origins else ["*"],  # Allow all if no specific origins set
         "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
     }
 })
 
