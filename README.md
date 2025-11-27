@@ -22,43 +22,111 @@ Ascent Employee Bridge is a comprehensive HR management platform designed to str
 ## Setup & Installation
 
 ### Prerequisites
-- Node.js (v16+ recommended)
-- Python 3.8+
-- MySQL Server
+- Node.js **16+**
+- Python **3.9+**
+- MySQL **8+**
+- Git
 
-### Backend Setup
-1. **Clone the repository:**
+### 1. Clone the project
+```bash
+git clone https://github.com/Yvantrey/HR-Project.git
+cd HR-Project
+```
+
+### 2. Backend setup (Flask + MySQL)
+1. **Create virtual environment (recommended)**
    ```bash
-   git clone <repo-url>
-   cd ascent-employee-compass/Backend
+   cd Backend
+   python -m venv .venv
+   source .venv/bin/activate   # Windows: .venv\Scripts\activate
    ```
-2. **Install Python dependencies:**
+2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
-   pip install fpdf
-   pip install python-dotenv
    ```
-3. **Configure environment variables:**
-   - Copy `.env.example` to `.env` and set your DB credentials and secret keys.
-4. **Set up the database:**
-   - Import the schema from `src/database/realschema.sql` into your MySQL server.
-5. **Run the backend server:**
+3. **Configure environment variables**
+   - Duplicate `.env.example` as `.env`
+   - Fill in:
+     ```env
+     DB_HOST=localhost
+     DB_PORT=3306
+     DB_USER=root
+     DB_PASSWORD=your_password
+     DB_NAME=hrdatabase
+     SECRET_KEY=your_flask_secret
+     JWT_SECRET=your_jwt_secret
+     ALLOWED_ORIGINS=http://localhost:5173
+     ```
+4. **Create and seed the database**
+   ```bash
+   mysql -u root -p < ../src/database/realschema.sql
+   ```
+5. **Run the backend locally**
    ```bash
    python server.py
    ```
-   The backend will run on `https://yvantrey.pythonanywhere.com` by default.
+   The API listens on `http://127.0.0.1:5000`.
 
-### Frontend Setup
-1. **Navigate to the frontend directory:**
+### 3. Frontend setup (Vite + React)
+1. Install packages:
    ```bash
-   cd ../ # from Backend to project root
+   cd ../
    npm install
    ```
-2. **Start the frontend:**
+2. **Environment variables**
+   - Create `.env.local` in the project root:
+     ```
+     VITE_API_URL=http://127.0.0.1:5000/api
+     ```
+3. **Start the dev server**
    ```bash
    npm run dev
    ```
-   The frontend will run on `http://localhost:8080` (or your configured port).
+   Vite defaults to `http://localhost:5173`.
+
+### 4. Deploying the backend on PythonAnywhere
+1. Upload/clone the repo to `/home/<username>/HR-Project`.
+2. Create a PythonAnywhere MySQL database (Databases tab).
+3. Update the WSGI file (`/var/www/<app>.wsgi`) to set environment variables:
+   ```python
+   import os, sys
+   os.environ['ALLOWED_ORIGINS'] = 'https://your-frontend.vercel.app'
+   os.environ['DB_HOST'] = '<username>.mysql.pythonanywhere-services.com'
+   os.environ['DB_USER'] = '<username>'
+   os.environ['DB_PASSWORD'] = '<mysql_password>'
+   os.environ['DB_NAME'] = '<username>$default'
+   os.environ['DB_PORT'] = '3306'
+
+   path = '/home/<username>/HR-Project'
+   if path not in sys.path:
+       sys.path.append(path)
+
+   from Backend.server import app as application
+   ```
+4. Install requirements inside your PythonAnywhere virtualenv and run migrations:
+   ```bash
+   workon hr-project-env
+   pip install -r Backend/requirements.txt
+   mysql -u <username> -p'<mysql_password>' < src/database/realschema.sql
+   ```
+5. Reload the web app from the PythonAnywhere dashboard.
+
+### 5. Frontend production deploy (Vercel)
+1. Connect the GitHub repository on Vercel.
+2. Set **Environment Variables** under *Settings → Environment Variables*:
+   ```
+   VITE_API_URL=https://yvantrey.pythonanywhere.com/api
+   ```
+3. Deploy. After deployment, verify login using the demo credentials in `LoginPage.tsx`.
+
+### 6. Verifying the installation
+1. Visit the frontend (local or Vercel).
+2. Use the admin demo credentials:
+   ```
+   Email: admin@gmail.com
+   Password: TestPassword123!
+   ```
+3. Confirm dashboards load and API calls hit the deployed backend (check browser dev tools → Network).
 
 ## Main API Endpoints
 - **Authentication:**
