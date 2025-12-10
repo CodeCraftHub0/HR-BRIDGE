@@ -29,7 +29,7 @@ Ascent Employee Bridge is a comprehensive HR management platform designed to str
 
 ### 1. Clone the project
 ```bash
-git clone https://github.com/Yvantrey/HR-Project.git
+git clone https://github.com/CodeCraftHub0/HR-BRIDGE.git
 cd HR-Project
 ```
 
